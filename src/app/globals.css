@@ -1,26 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700;900&display=swap');
+
+@import "tailwindcss/preflight";
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-lato: 'Lato', system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-lato);
+  background-color: #faf7f2;
+  color: #2c1a0e;
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: #c8531a;
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #faf7f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #c8531a;
+  border-radius: 99px;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-playfair);
+  }
+  .font-body {
+    font-family: var(--font-lato);
+  }
+  .section-pad {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+  }
+  .max-container {
+    @apply max-w-6xl mx-auto;
+  }
 }
