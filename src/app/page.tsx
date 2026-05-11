@@ -1,16 +1,18 @@
 import Navbar from '@/components/layout/Navbar'
 import Hero from '@/components/sections/Hero'
+import Categories from '@/components/sections/Categories'
 
 export default function Home() {
   return (
     <main>
       <Navbar />
       <Hero />
+      <Categories />
 
-      {/* placeholder so page has scroll room */}
-      <div className="h-screen bg-white flex items-center justify-center">
+      {/* placeholder */}
+      <div className="h-screen bg-linen flex items-center justify-center">
         <p className="font-display text-2xl text-terracotta">
-          Categories section coming next...
+          Product Showcase coming next...
         </p>
       </div>
     </main>
