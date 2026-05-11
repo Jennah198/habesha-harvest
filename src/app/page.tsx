@@ -2,6 +2,7 @@ import Navbar from '@/components/layout/Navbar'
 import Hero from '@/components/sections/Hero'
 import Categories from '@/components/sections/Categories'
 import ProductShowcase from '@/components/sections/ProductShowcase'
+import VideoSection from '@/components/sections/VideoSection'
 
 export default function Home() {
   return (
@@ -10,11 +11,12 @@ export default function Home() {
       <Hero />
       <Categories />
       <ProductShowcase />
+      <VideoSection />
 
       {/* placeholder */}
-      <div className="h-screen bg-espresso flex items-center justify-center">
-        <p className="font-display text-2xl text-gold">
-          Video Section coming next...
+      <div className="h-screen bg-linen flex items-center justify-center">
+        <p className="font-display text-2xl text-terracotta">
+          How To Order coming next...
         </p>
       </div>
     </main>
