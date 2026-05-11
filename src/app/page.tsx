@@ -1,9 +1,19 @@
+import Navbar from '@/components/layout/Navbar'
+
 export default function Home() {
   return (
     <main>
-      <p className="text-center py-20 text-terracotta font-display text-2xl">
-        Habesha Harvest — Building...
-      </p>
+      <Navbar />
+
+      {/* Temporary spacer so we can see the navbar */}
+      <div
+        id="home"
+        className="min-h-screen bg-linen flex items-center justify-center"
+      >
+        <p className="font-display text-3xl text-terracotta">
+          Habesha Harvest — Navbar Done ✓
+        </p>
+      </div>
     </main>
   )
 }
