@@ -3,6 +3,7 @@ import Hero from '@/components/sections/Hero'
 import Categories from '@/components/sections/Categories'
 import ProductShowcase from '@/components/sections/ProductShowcase'
 import VideoSection from '@/components/sections/VideoSection'
+import HowToOrder from '@/components/sections/HowToOrder'
 
 export default function Home() {
   return (
@@ -12,11 +13,12 @@ export default function Home() {
       <Categories />
       <ProductShowcase />
       <VideoSection />
+      <HowToOrder />
 
       {/* placeholder */}
-      <div className="h-screen bg-linen flex items-center justify-center">
+      <div className="h-screen bg-white flex items-center justify-center">
         <p className="font-display text-2xl text-terracotta">
-          How To Order coming next...
+          Gallery coming next...
         </p>
       </div>
     </main>
