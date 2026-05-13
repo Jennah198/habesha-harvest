@@ -1,11 +1,13 @@
-import Navbar from '@/components/layout/Navbar'
-import Hero from '@/components/sections/Hero'
-import Categories from '@/components/sections/Categories'
+import Navbar          from '@/components/layout/Navbar'
+import Hero            from '@/components/sections/Hero'
+import Categories      from '@/components/sections/Categories'
 import ProductShowcase from '@/components/sections/ProductShowcase'
-import VideoSection from '@/components/sections/VideoSection'
-import HowToOrder from '@/components/sections/HowToOrder'
-import Gallery from '@/components/sections/Gallery'
-import Feedback from '@/components/sections/Feedback'
+import VideoSection    from '@/components/sections/VideoSection'
+import HowToOrder      from '@/components/sections/HowToOrder'
+import Gallery         from '@/components/sections/Gallery'
+import Feedback        from '@/components/sections/Feedback'
+import About           from '@/components/sections/About'
+import ContactForm     from '@/components/sections/ContactForm'
 
 export default function Home() {
   return (
@@ -18,11 +20,14 @@ export default function Home() {
       <HowToOrder />
       <Gallery />
       <Feedback />
+      <About />
+      <ContactForm />
 
       {/* placeholder */}
-      <div className="h-screen bg-white flex items-center justify-center">
-        <p className="font-display text-2xl text-terracotta">
-          About coming next...
+      <div className="h-40 bg-espresso flex items-center
+                      justify-center">
+        <p className="font-display text-xl text-gold">
+          Footer coming next...
         </p>
       </div>
     </main>
