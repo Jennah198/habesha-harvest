@@ -1,4 +1,5 @@
 import Navbar          from '@/components/layout/Navbar'
+import Footer          from '@/components/layout/Footer'
 import Hero            from '@/components/sections/Hero'
 import Categories      from '@/components/sections/Categories'
 import ProductShowcase from '@/components/sections/ProductShowcase'
@@ -22,14 +23,7 @@ export default function Home() {
       <Feedback />
       <About />
       <ContactForm />
-
-      {/* placeholder */}
-      <div className="h-40 bg-espresso flex items-center
-                      justify-center">
-        <p className="font-display text-xl text-gold">
-          Footer coming next...
-        </p>
-      </div>
+      <Footer />
     </main>
   )
 }
