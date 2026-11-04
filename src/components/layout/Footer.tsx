@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { ArrowRight, Mail, Phone, MapPin, Check } from 'lucide-react'
 import { contactInfo } from '@/data/content'
 import { scrollToId } from '@/components/ui/clay'
-import InjeraArt from '@/components/ui/InjeraArt'
+import BrandMark from '@/components/ui/BrandMark'
 
 const columns = [
   {
@@ -58,15 +58,12 @@ export default function Footer() {
   return (
     <footer className="px-3 pb-6 pt-12 sm:px-6">
       <div className="clay relative mx-auto max-w-7xl overflow-hidden bg-cocoa px-6 pb-8 pt-14 text-cream [--clay-drop:rgb(58_36_22/0.45)] sm:px-12">
-        <InjeraArt className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 opacity-10" />
 
         <div className="relative grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1.4fr]">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-butter p-1.5 shadow-[inset_3px_3px_6px_rgb(255_255_255/0.6),inset_-3px_-3px_6px_rgb(0_0_0/0.15)]">
-                <InjeraArt className="h-full w-full" />
-              </span>
+              <BrandMark className="h-12 w-12" />
               <span className="font-display text-2xl font-semibold">Habesha Harvest</span>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-cream/60">
@@ -151,7 +148,7 @@ export default function Footer() {
 
         <div className="relative mt-12 flex flex-col items-center justify-between gap-3 border-t border-cream/10 pt-6 text-xs text-cream/50 sm:flex-row">
           <p>© {new Date().getFullYear()} Habesha Harvest. All rights reserved.</p>
-          <p>Made with ❤️ in Addis Ababa</p>
+          <p>Proudly produced in Addis Ababa, Ethiopia</p>
         </div>
       </div>
     </footer>

@@ -28,10 +28,10 @@ const makeReference = () => `HH-${Math.random().toString(36).substring(2, 8).toU
 const countries = getNames().sort((a, b) => a.localeCompare(b))
 
 const contactItems = [
-  { icon: Phone, label: 'Phone', value: contactInfo.phone, href: contactInfo.phoneHref, tone: 'bg-blush' },
-  { icon: Mail, label: 'Email', value: contactInfo.email, href: `mailto:${contactInfo.email}`, tone: 'bg-butter' },
-  { icon: MessageCircle, label: 'WhatsApp', value: contactInfo.phone, href: contactInfo.whatsappHref, tone: 'bg-mint' },
-  { icon: MapPin, label: 'Address', value: contactInfo.address, href: 'https://maps.google.com/?q=Bole,Addis+Ababa', tone: 'bg-sky' },
+  { icon: Phone, label: 'Phone', value: contactInfo.phone, href: contactInfo.phoneHref },
+  { icon: Mail, label: 'Email', value: contactInfo.email, href: `mailto:${contactInfo.email}` },
+  { icon: MessageCircle, label: 'WhatsApp', value: contactInfo.phone, href: contactInfo.whatsappHref },
+  { icon: MapPin, label: 'Address', value: contactInfo.address, href: 'https://maps.google.com/?q=Bole,Addis+Ababa' },
 ]
 
 const productOptions = [
@@ -101,7 +101,7 @@ export default function ContactForm() {
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.5fr]">
           {/* Info column */}
           <div className="flex flex-col gap-5">
-            {contactItems.map(({ icon: Icon, label, value, href, tone }, i) => (
+            {contactItems.map(({ icon: Icon, label, value, href }, i) => (
               <Reveal key={label} delay={i * 0.08}>
                 <a
                   href={href}
@@ -109,8 +109,8 @@ export default function ContactForm() {
                   rel="noreferrer"
                   className="clay-sm clay-hover group flex items-center gap-4 bg-white p-4"
                 >
-                  <span className={`clay-sm flex h-12 w-12 shrink-0 items-center justify-center ${tone}`}>
-                    <Icon size={20} className="text-cocoa" />
+                  <span className={`clay-sm flex h-12 w-12 shrink-0 items-center justify-center bg-cream`}>
+                    <Icon size={20} className="text-terracotta" />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-xs font-bold uppercase tracking-wider text-cocoa-soft">{label}</span>

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { MessageCircle, X, Send } from 'lucide-react'
 import { contactInfo } from '@/data/content'
 import { scrollToId } from '@/components/ui/clay'
-import InjeraArt from '@/components/ui/InjeraArt'
+import BrandMark from '@/components/ui/BrandMark'
 
 type Msg = { from: 'bot' | 'user'; text: string; action?: { label: string; href: string } }
 
@@ -48,13 +48,13 @@ const faqs: { keys: string[]; chip?: string; answer: string; action?: Msg['actio
   },
   {
     keys: ['hello', 'hi', 'selam', 'hey'],
-    answer: 'Selam! 👋 How can I help you today?',
+    answer: 'Selam! How can I help you today?',
   },
 ]
 
 const greeting: Msg = {
   from: 'bot',
-  text: 'Selam! 👋 I’m the Habesha Harvest assistant. Ask me about pricing, shipping, freshness or ordering.',
+  text: 'Selam! I’m the Habesha Harvest assistant. Ask me about pricing, shipping, freshness or ordering.',
 }
 
 function reply(input: string): Msg {
@@ -106,9 +106,7 @@ export default function Chatbot() {
           >
             {/* Header */}
             <div className="flex items-center gap-3 bg-terracotta px-5 py-4 text-white">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-butter p-1 shadow-[inset_3px_3px_6px_rgb(255_255_255/0.6),inset_-3px_-3px_6px_rgb(0_0_0/0.15)]">
-                <InjeraArt className="h-full w-full" />
-              </span>
+              <BrandMark className="h-11 w-11 rounded-full bg-cream text-terracotta" />
               <div className="flex-1 leading-tight">
                 <p className="font-display text-lg font-semibold">Habesha Assistant</p>
                 <p className="flex items-center gap-1.5 text-xs text-white/80">

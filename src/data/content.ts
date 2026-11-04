@@ -63,7 +63,6 @@ export const testimonials: Testimonial[] = [
     name: 'Selamawit Tesfaye',
     business: 'Blue Nile Restaurant',
     country: 'Washington D.C., USA',
-    flag: '🇺🇸',
     rating: 5,
     quote:
       'Habesha Harvest injera tastes exactly like home. Our customers notice the quality difference immediately. We have been ordering for 3 years and will never switch.',
@@ -74,7 +73,6 @@ export const testimonials: Testimonial[] = [
     name: 'Mohammed Al-Rashid',
     business: 'Al Habesha Kitchen',
     country: 'Dubai, UAE',
-    flag: '🇦🇪',
     rating: 5,
     quote:
       'Reliable delivery, consistent quality, and packaging that handles the journey from Addis to Dubai without any issues. Highly recommend for any Gulf-based restaurant.',
@@ -85,7 +83,6 @@ export const testimonials: Testimonial[] = [
     name: 'Tigist Bekele',
     business: 'Little Ethiopia',
     country: 'London, UK',
-    flag: '🇬🇧',
     rating: 5,
     quote:
       'We tried four suppliers before finding Habesha Harvest. Nothing compares. The Classic Teff is 100% authentic and our entire diaspora community agrees.',

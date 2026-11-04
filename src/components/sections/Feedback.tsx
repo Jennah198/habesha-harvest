@@ -100,7 +100,7 @@ export default function Feedback() {
                     <span className="text-left leading-tight">
                       <span className="block font-bold text-cocoa">{t.name}</span>
                       <span className="text-sm text-cocoa-soft">
-                        {t.business} · {t.flag} {t.country}
+                        {t.business} · {t.country}
                       </span>
                     </span>
                   </figcaption>

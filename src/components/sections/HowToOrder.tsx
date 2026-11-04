@@ -1,18 +1,17 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ClipboardList, FileText, CheckCircle, Truck, ArrowRight } from 'lucide-react'
+import { ClipboardList, FileText, CheckCircle, Truck, ArrowRight, ShieldCheck, PackageCheck, BadgeCheck, Headset } from 'lucide-react'
 import { orderSteps } from '@/data/content'
 import { ClayButton, Reveal, SectionHeader, scrollToId } from '@/components/ui/clay'
 
 const iconMap: Record<string, React.ElementType> = { ClipboardList, FileText, CheckCircle, Truck }
-const tones = ['bg-blush', 'bg-butter', 'bg-mint', 'bg-sky']
 
 const trust = [
-  { emoji: '🔒', text: 'Secure Payments' },
-  { emoji: '📦', text: 'Tracked Shipping' },
-  { emoji: '✅', text: 'Quality Guaranteed' },
-  { emoji: '💬', text: '24hr Support' },
+  { icon: ShieldCheck, text: 'Secure Payments' },
+  { icon: PackageCheck, text: 'Tracked Shipping' },
+  { icon: BadgeCheck, text: 'Quality Guaranteed' },
+  { icon: Headset, text: '24hr Support' },
 ]
 
 export default function HowToOrder() {
@@ -52,8 +51,8 @@ export default function HowToOrder() {
                 transition={{ duration: 0.6, delay: i * 0.15 }}
                 className="relative flex flex-col items-center text-center"
               >
-                <div className={`clay relative z-10 flex h-24 w-24 items-center justify-center rounded-full ${tones[i]}`}>
-                  <Icon size={34} className="text-cocoa" />
+                <div className={`clay relative z-10 flex h-24 w-24 items-center justify-center rounded-full bg-white`}>
+                  <Icon size={34} className="text-terracotta" />
                   <span className="clay-btn absolute -right-1 -top-1 flex h-9 w-9 items-center justify-center bg-terracotta text-xs font-bold text-white">
                     {step.number}
                   </span>
@@ -88,9 +87,9 @@ export default function HowToOrder() {
           </div>
 
           <div className="relative mt-8 flex flex-wrap gap-3">
-            {trust.map((t) => (
-              <span key={t.text} className="clay-sm inline-flex items-center gap-2 bg-white/80 px-4 py-2 text-sm font-semibold text-cocoa">
-                <span>{t.emoji}</span> {t.text}
+            {trust.map(({ icon: TIcon, text }) => (
+              <span key={text} className="clay-sm inline-flex items-center gap-2 bg-white/80 px-4 py-2 text-sm font-semibold text-cocoa">
+                <TIcon size={16} className="text-terracotta" /> {text}
               </span>
             ))}
           </div>

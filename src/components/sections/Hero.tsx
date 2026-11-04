@@ -10,6 +10,7 @@ import {
   Leaf,
   Truck,
   Star,
+  Globe,
 } from 'lucide-react'
 import Image from 'next/image'
 import { ClayButton, scrollToId, Blob } from '@/components/ui/clay'
@@ -21,9 +22,9 @@ const fadeUp = {
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 
 const quickActions = [
-  { label: 'Place Order', hint: 'Get a quote in 24h', href: '#contact', icon: ShoppingBag, tone: 'bg-blush' },
-  { label: 'Watch it being made', hint: 'From teff to table', href: '#process', icon: Play, tone: 'bg-mint' },
-  { label: "What's Injera?", hint: 'Meet our three breads', href: '#our-injera', icon: HelpCircle, tone: 'bg-sky' },
+  { label: 'Place Order', hint: 'Get a quote in 24h', href: '#contact', icon: ShoppingBag },
+  { label: 'Watch it being made', hint: 'From teff to table', href: '#process', icon: Play },
+  { label: "What's Injera?", hint: 'Meet our three breads', href: '#our-injera', icon: HelpCircle },
 ]
 
 const highlights = ['100% teff grain', '3-day natural ferment', 'Vacuum-sealed export']
@@ -41,7 +42,7 @@ export default function Hero() {
             variants={fadeUp}
             className="clay-sm inline-flex w-fit items-center gap-2 bg-white px-4 py-2 text-sm font-bold text-cocoa"
           >
-            <span className="text-base">🌍</span> Exporting to 15+ countries
+            <Globe size={16} className="text-terracotta" /> Exporting to 15+ countries
           </motion.span>
 
           <motion.h1
@@ -180,14 +181,14 @@ export default function Hero() {
               Quick actions
             </p>
             <div className="flex flex-col gap-2.5">
-              {quickActions.map(({ label, hint, href, icon: Icon, tone }) => (
+              {quickActions.map(({ label, hint, href, icon: Icon }) => (
                 <button
                   key={label}
                   onClick={() => scrollToId(href)}
                   className="group flex cursor-pointer items-center gap-3 rounded-2xl p-2 text-left transition-colors hover:bg-cream"
                 >
-                  <span className={`clay-sm flex h-11 w-11 shrink-0 items-center justify-center ${tone}`}>
-                    <Icon size={18} className="text-cocoa" />
+                  <span className="clay-sm flex h-11 w-11 shrink-0 items-center justify-center bg-cream">
+                    <Icon size={18} className="text-terracotta" />
                   </span>
                   <span className="flex-1 leading-tight">
                     <span className="block text-sm font-bold text-cocoa">{label}</span>

@@ -21,7 +21,6 @@ export interface Testimonial {
   name: string
   business: string
   country: string
-  flag: string
   rating: number
   quote: string
   initials: string

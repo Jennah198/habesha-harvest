@@ -156,6 +156,9 @@ body {
   border-radius: 99px;
 }
 
+/* Consistent, refined line weight for all lucide icons */
+.lucide { stroke-width: 1.75; }
+
 :focus-visible {
   outline: 3px solid var(--color-gold);
   outline-offset: 3px;

@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X, ShoppingBag } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ClayButton, scrollToId } from '@/components/ui/clay'
-import InjeraArt from '@/components/ui/InjeraArt'
+import BrandMark from '@/components/ui/BrandMark'
 
 const navLinks = [
   { label: 'Home', href: '#home' },
@@ -65,9 +65,7 @@ export default function Navbar() {
           className="flex cursor-pointer items-center gap-2.5 rounded-full pr-2"
           aria-label="Habesha Harvest — back to top"
         >
-          <span className="clay-sm flex h-11 w-11 items-center justify-center bg-butter p-1">
-            <InjeraArt className="h-full w-full" />
-          </span>
+          <BrandMark className="h-11 w-11" />
           <span className="font-display text-lg font-semibold leading-none text-cocoa">
             Habesha
             <span className="block text-xs font-medium tracking-[0.25em] text-terracotta">

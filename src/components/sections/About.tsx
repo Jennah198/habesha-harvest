@@ -5,9 +5,9 @@ import { Award, Leaf, Globe, MapPin, Wheat, Users, Ship } from 'lucide-react'
 import { Reveal, SectionHeader } from '@/components/ui/clay'
 
 const certifications = [
-  { icon: Award, label: 'ISO Certified', tone: 'bg-butter' },
-  { icon: Leaf, label: '100% Organic', tone: 'bg-mint' },
-  { icon: Globe, label: 'Export Licensed', tone: 'bg-sky' },
+  { icon: Award, label: 'ISO Certified' },
+  { icon: Leaf, label: '100% Organic' },
+  { icon: Globe, label: 'Export Licensed' },
 ]
 
 const story = [
@@ -16,21 +16,18 @@ const story = [
     icon: Users,
     title: 'A family kitchen',
     text: "Habesha Harvest was founded in 1985 by the Tadesse family in the heart of Addis Ababa. What began as a small neighborhood injera kitchen has grown over three generations into one of Ethiopia's most trusted injera exporters — without ever compromising the traditional recipes passed down through our family.",
-    tone: 'bg-blush',
   },
   {
     year: 'Highlands',
     icon: Wheat,
     title: 'Teff from the source',
     text: 'Every batch of our injera begins with teff grain sourced exclusively from the fertile highlands of Tigray and Amhara — the same regions that have grown teff for over three thousand years. Our farmers are paid fairly and work under sustainable agricultural practices we help fund.',
-    tone: 'bg-butter',
   },
   {
     year: '2010',
     icon: Ship,
     title: 'Going global',
     text: 'Since receiving our international export license in 2010, we have shipped to restaurants, diaspora grocery stores, and wholesale distributors across 15 countries. Every shipment carries our ISO certification and full cold-chain documentation — so your customers receive injera exactly as it left our kitchen.',
-    tone: 'bg-mint',
   },
 ]
 
@@ -88,11 +85,11 @@ export default function About() {
 
         {/* Timeline column */}
         <div className="flex flex-col gap-6 lg:pt-4">
-          {story.map(({ year, icon: Icon, title, text, tone }, i) => (
+          {story.map(({ year, icon: Icon, title, text }, i) => (
             <Reveal key={title} delay={i * 0.1} className="clay clay-hover flex gap-5 bg-white p-6 sm:p-7">
               <div className="flex flex-col items-center">
-                <span className={`clay-sm flex h-14 w-14 shrink-0 items-center justify-center ${tone}`}>
-                  <Icon size={24} className="text-cocoa" />
+                <span className={`clay-sm flex h-14 w-14 shrink-0 items-center justify-center bg-cream`}>
+                  <Icon size={24} className="text-terracotta" />
                 </span>
                 {i < story.length - 1 && <span className="clay-inset mt-3 w-1.5 flex-1 rounded-full bg-clay" />}
               </div>
@@ -109,9 +106,9 @@ export default function About() {
               Certifications &amp; compliance
             </p>
             <div className="flex flex-wrap gap-3">
-              {certifications.map(({ icon: Icon, label, tone }) => (
-                <span key={label} className={`clay-sm inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-cocoa ${tone}`}>
-                  <Icon size={16} /> {label}
+              {certifications.map(({ icon: Icon, label }) => (
+                <span key={label} className="clay-sm inline-flex items-center gap-2 bg-white px-4 py-2.5 text-sm font-bold text-cocoa">
+                  <Icon size={16} className="text-terracotta" /> {label}
                 </span>
               ))}
             </div>

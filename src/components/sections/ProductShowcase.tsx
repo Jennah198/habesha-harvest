@@ -13,9 +13,9 @@ const themes = [
 ]
 
 const features = [
-  { icon: Leaf, title: '100% Natural', desc: 'No preservatives or additives', tone: 'bg-mint' },
-  { icon: ShieldCheck, title: 'Export Ready', desc: 'Certified for international shipping', tone: 'bg-blush' },
-  { icon: Clock3, title: 'Stays Fresh', desc: '30 days at room temperature', tone: 'bg-butter' },
+  { icon: Leaf, title: '100% Natural', desc: 'No preservatives or additives' },
+  { icon: ShieldCheck, title: 'Export Ready', desc: 'Certified for international shipping' },
+  { icon: Clock3, title: 'Stays Fresh', desc: '30 days at room temperature' },
 ]
 
 export default function ProductShowcase() {
@@ -81,10 +81,10 @@ export default function ProductShowcase() {
         </div>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-3">
-          {features.map(({ icon: Icon, title, desc, tone }, i) => (
+          {features.map(({ icon: Icon, title, desc }, i) => (
             <Reveal key={title} delay={i * 0.1} className="clay-sm flex items-center gap-4 bg-white p-5">
-              <span className={`clay-sm flex h-14 w-14 shrink-0 items-center justify-center ${tone}`}>
-                <Icon size={22} className="text-cocoa" />
+              <span className={`clay-sm flex h-14 w-14 shrink-0 items-center justify-center bg-cream`}>
+                <Icon size={22} className="text-terracotta" />
               </span>
               <div>
                 <p className="font-display text-lg font-semibold text-cocoa">{title}</p>
