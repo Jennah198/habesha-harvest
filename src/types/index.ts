@@ -4,6 +4,7 @@ export interface Product {
   description: string
   weightInfo: string
   badge: string
+  image: string
 }
 
 export interface Category {
@@ -11,8 +12,7 @@ export interface Category {
   name: string
   subtitle: string
   info: string
-  buttonColor: string
-  buttonHover: string
+  tone: 'mint' | 'blush' | 'butter' | 'sky' | 'lilac'
   image: string
 }
 
@@ -39,5 +39,6 @@ export interface GalleryItem {
   location: string
   colorFrom: string
   colorTo: string
+  image: string
   height: string
 }

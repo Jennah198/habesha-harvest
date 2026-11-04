@@ -1,25 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Send, CheckCircle } from 'lucide-react'
-import { useForm } from 'react-hook-form'
+import { ChevronLeft, ChevronRight, Send, CheckCircle, Quote } from 'lucide-react'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { testimonials } from '@/data/content'
 import StarRating from '@/components/ui/StarRating'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { ClayButton, Reveal, SectionHeader } from '@/components/ui/clay'
+import { Field, inputClass } from '@/components/ui/form'
 
-// ─── Zod validation schema ─────────────────────────────────────────
 const feedbackSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   business: z.string().optional(),
@@ -27,588 +18,206 @@ const feedbackSchema = z.object({
   rating: z.number().min(1, 'Please select a rating').max(5),
   message: z.string().min(20, 'Message must be at least 20 characters'),
 })
-
 type FeedbackFormData = z.infer<typeof feedbackSchema>
 
-// ─── Slide animation variants ──────────────────────────────────────
-const slideVariants = {
-  enter: (dir: number) => ({
-    x: dir > 0 ? 60 : -60,
-    opacity: 0,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.4, ease: 'easeOut' },
-  },
-  exit: (dir: number) => ({
-    x: dir > 0 ? -60 : 60,
-    opacity: 0,
-    transition: { duration: 0.3 },
-  }),
-}
+const avatarTones = ['bg-blush', 'bg-butter', 'bg-mint']
 
 export default function Feedback() {
-  // ─── Carousel state ──────────────────────────────────────────────
-  const [activeIndex, setActiveIndex] = useState(0)
-  // direction: 1 = going forward, -1 = going backward
-  const [direction, setDirection] = useState(1)
-
-  // ─── Form state ──────────────────────────────────────────────────
-  const [rating, setRating] = useState(0)
+  const [[index, dir], setSlide] = useState<[number, number]>([0, 0])
+  const [paused, setPaused] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  // ─── Auto-play carousel every 5 seconds ─────────────────────────
+  const go = (d: number) =>
+    setSlide(([i]) => [(i + d + testimonials.length) % testimonials.length, d])
+
   useEffect(() => {
-    const timer = setInterval(() => {
-      setDirection(1)
-      setActiveIndex((prev) =>
-        prev === testimonials.length - 1 ? 0 : prev + 1,
-      )
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [])
+    if (paused) return
+    const t = setInterval(() => go(1), 6000)
+    return () => clearInterval(t)
+  }, [paused])
 
-  // ─── Navigate carousel ───────────────────────────────────────────
-  const goTo = (index: number) => {
-    setDirection(index > activeIndex ? 1 : -1)
-    setActiveIndex(index)
-  }
-
-  const prev = () => {
-    setDirection(-1)
-    setActiveIndex((p) => (p === 0 ? testimonials.length - 1 : p - 1))
-  }
-
-  const next = () => {
-    setDirection(1)
-    setActiveIndex((p) => (p === testimonials.length - 1 ? 0 : p + 1))
-  }
-
-  // ─── Form setup ───────────────────────────────────────────────────
-  const form = useForm<FeedbackFormData>({
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
-    defaultValues: {
-      name: '',
-      business: '',
-      country: '',
-      rating: 0,
-      message: '',
-    },
+    defaultValues: { name: '', business: '', country: '', rating: 0, message: '' },
   })
 
-  const onSubmit = (data: FeedbackFormData) => {
-    console.log('Feedback submitted:', data)
+  const onSubmit = async (data: FeedbackFormData) => {
     // In production: POST to /api/feedback
+    await new Promise((r) => setTimeout(r, 600))
+    console.log('Feedback submitted:', data)
     setSubmitted(true)
   }
 
-  const currentTestimonial = testimonials[activeIndex]
+  const t = testimonials[index]
 
   return (
-    <section
-      id="feedback"
-      className="bg-linen py-20 px-8 sm:px-12 lg:px-16
-                 relative overflow-hidden"
-    >
-      {/* ── Decorative blobs ─────────────────────────────────────── */}
-      <div
-        className="absolute top-0 right-0 w-80 h-80
-                      bg-terracotta/5 rounded-full blur-3xl
-                      pointer-events-none translate-x-1/2
-                      -translate-y-1/2"
-      />
-      <div
-        className="absolute bottom-0 left-0 w-80 h-80
-                      bg-gold/5 rounded-full blur-3xl
-                      pointer-events-none -translate-x-1/2
-                      translate-y-1/2"
-      />
+    <section id="feedback" className="section-pad">
+      <div className="max-container">
+        <SectionHeader
+          eyebrow="Client stories"
+          title={
+            <>
+              What our <span className="text-terracotta">partners</span> say
+            </>
+          }
+        />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* ════════════════════════════════════════════════════════
-            TOP HALF — Testimonials carousel
-            ════════════════════════════════════════════════════════ */}
-
-        {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+        {/* Carousel */}
+        <div
+          className="mx-auto max-w-3xl"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
         >
-          <span
-            className="inline-block text-xs font-bold uppercase
-                           tracking-widest text-terracotta font-body mb-3"
-          >
-            Client Stories
-          </span>
-          <h2
-            className="font-display font-bold text-warmBrown
-                         text-3xl md:text-5xl"
-          >
-            What Our Partners Say
-          </h2>
-          <div
-            className="w-16 h-1 bg-terracotta rounded-full
-                          mx-auto mt-4"
-          />
-        </motion.div>
-
-        {/* Carousel container */}
-        <div className="max-w-2xl mx-auto">
-          {/* Testimonial card with slide animation */}
-          <div className="relative overflow-hidden">
-            <AnimatePresence custom={direction} mode="wait">
-              <motion.div
-                key={activeIndex}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                className="bg-white rounded-3xl p-8 md:p-10
-                           shadow-xl shadow-warmBrown/8
-                           border border-gray-100"
-              >
-                {/* Top row — stars + flag */}
-                <div
-                  className="flex items-center
-                                justify-between mb-6"
+          <div className="clay relative overflow-hidden bg-white p-8 sm:p-12">
+            <span className="clay-sm absolute -left-2 -top-2 flex h-16 w-16 items-center justify-center rounded-full bg-gold">
+              <Quote size={24} className="fill-cocoa text-cocoa" />
+            </span>
+            <div className="min-h-64 sm:min-h-52">
+              <AnimatePresence mode="wait" custom={dir}>
+                <motion.figure
+                  key={t.id}
+                  custom={dir}
+                  initial={{ opacity: 0, x: dir >= 0 ? 60 : -60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: dir >= 0 ? -60 : 60 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col items-center text-center"
                 >
-                  <StarRating
-                    value={currentTestimonial.rating}
-                    readonly
-                    size="sm"
-                  />
-                  <span className="text-2xl">{currentTestimonial.flag}</span>
-                </div>
-
-                {/* Large decorative opening quote */}
-                <div
-                  className="font-display text-8xl
-                                text-terracotta/15 leading-none
-                                -mb-6 -mt-2 select-none"
-                >
-                  "
-                </div>
-
-                {/* Quote text */}
-                <p
-                  className="font-display italic text-warmBrown/75
-                              text-lg leading-relaxed mb-6"
-                >
-                  {currentTestimonial.quote}
-                </p>
-
-                {/* Divider */}
-                <div className="w-full h-px bg-gray-100 mb-6" />
-
-                {/* Customer info row */}
-                <div className="flex items-center gap-4">
-                  {/* Avatar circle */}
-                  <div
-                    className="w-12 h-12 rounded-full
-                                  bg-terracotta flex items-center
-                                  justify-center flex-shrink-0
-                                  shadow-md"
-                  >
-                    <span
-                      className="text-white font-bold
-                                     font-body text-sm"
-                    >
-                      {currentTestimonial.initials}
+                  <StarRating value={t.rating} readonly size="md" />
+                  <blockquote className="mt-5 font-display text-xl font-medium leading-relaxed text-cocoa sm:text-2xl">
+                    “{t.quote}”
+                  </blockquote>
+                  <figcaption className="mt-6 flex items-center gap-3">
+                    <span className={`clay-sm flex h-12 w-12 items-center justify-center rounded-full font-bold text-cocoa ${avatarTones[index % 3]}`}>
+                      {t.initials}
                     </span>
-                  </div>
-
-                  {/* Name + business */}
-                  <div>
-                    <p
-                      className="font-bold text-warmBrown
-                                  font-body text-sm"
-                    >
-                      {currentTestimonial.name}
-                    </p>
-                    <p
-                      className="text-warmBrown/50 text-xs
-                                  font-body mt-0.5"
-                    >
-                      {currentTestimonial.business} ·{' '}
-                      {currentTestimonial.country}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                    <span className="text-left leading-tight">
+                      <span className="block font-bold text-cocoa">{t.name}</span>
+                      <span className="text-sm text-cocoa-soft">
+                        {t.business} · {t.flag} {t.country}
+                      </span>
+                    </span>
+                  </figcaption>
+                </motion.figure>
+              </AnimatePresence>
+            </div>
           </div>
 
-          {/* Carousel controls */}
-          <div className="flex items-center justify-between mt-8">
-            {/* Prev arrow */}
-            <button
-              onClick={prev}
-              className="w-11 h-11 rounded-full border-2
-                         border-terracotta/30 text-terracotta
-                         flex items-center justify-center
-                         hover:bg-terracotta hover:text-white
-                         hover:border-terracotta
-                         transition-all duration-300"
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft size={18} />
+          <div className="mt-8 flex items-center justify-center gap-5">
+            <button onClick={() => go(-1)} aria-label="Previous testimonial" className="clay-btn flex h-12 w-12 cursor-pointer items-center justify-center bg-white text-cocoa [--clay-drop:rgb(150_95_55/0.3)]">
+              <ChevronLeft size={20} />
             </button>
-
-            {/* Dot indicators */}
-            <div className="flex items-center gap-2">
-              {testimonials.map((_, i) => (
+            <div className="clay-inset flex gap-2 rounded-full bg-clay px-3 py-2.5">
+              {testimonials.map((x, i) => (
                 <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  className={`rounded-full transition-all duration-300
-                    ${
-                      i === activeIndex
-                        ? 'w-6 h-2.5 bg-terracotta'
-                        : 'w-2.5 h-2.5 bg-terracotta/25 hover:bg-terracotta/50'
-                    }`}
-                  aria-label={`Go to testimonial ${i + 1}`}
+                  key={x.id}
+                  onClick={() => setSlide([i, i > index ? 1 : -1])}
+                  aria-label={`Show testimonial ${i + 1}`}
+                  className={`h-2.5 cursor-pointer rounded-full transition-all ${i === index ? 'w-8 bg-terracotta' : 'w-2.5 bg-cocoa-soft/30'}`}
                 />
               ))}
             </div>
-
-            {/* Next arrow */}
-            <button
-              onClick={next}
-              className="w-11 h-11 rounded-full border-2
-                         border-terracotta/30 text-terracotta
-                         flex items-center justify-center
-                         hover:bg-terracotta hover:text-white
-                         hover:border-terracotta
-                         transition-all duration-300"
-              aria-label="Next testimonial"
-            >
-              <ChevronRight size={18} />
+            <button onClick={() => go(1)} aria-label="Next testimonial" className="clay-btn flex h-12 w-12 cursor-pointer items-center justify-center bg-white text-cocoa [--clay-drop:rgb(150_95_55/0.3)]">
+              <ChevronRight size={20} />
             </button>
           </div>
         </div>
 
-        {/* ── Divider between two halves ───────────────────────── */}
-        <div className="w-full h-px bg-warmBrown/10 my-20" />
-
-        {/* ════════════════════════════════════════════════════════
-            BOTTOM HALF — Feedback form
-            ════════════════════════════════════════════════════════ */}
-
-        <div className="max-w-2xl mx-auto">
-          {/* Form section header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-10"
-          >
-            <span
-              className="inline-block text-xs font-bold uppercase
-                             tracking-widest text-terracotta
-                             font-body mb-3"
-            >
-              Your Voice Matters
-            </span>
-            <h2
-              className="font-display font-bold text-warmBrown
-                           text-3xl md:text-4xl"
-            >
-              Share Your Experience
-            </h2>
-            <div
-              className="w-16 h-1 bg-terracotta rounded-full
-                            mx-auto mt-4"
-            />
-            <p
-              className="text-warmBrown/50 text-sm font-body
-                          mt-4 max-w-sm mx-auto"
-            >
-              Your feedback helps us serve our partners better. All reviews are
-              verified before publishing.
+        {/* Feedback form */}
+        <Reveal className="clay mx-auto mt-20 grid max-w-5xl overflow-hidden bg-blush [--clay-drop:rgb(168_72_31/0.3)] lg:grid-cols-[1fr_1.5fr]">
+          <div className="flex flex-col justify-center gap-3 p-8 sm:p-10">
+            <span className="text-xs font-bold uppercase tracking-[0.18em] text-terracotta-dark">Your voice matters</span>
+            <h3 className="font-display text-3xl font-semibold text-cocoa">Share your experience</h3>
+            <p className="text-sm leading-relaxed text-cocoa-soft">
+              Your feedback helps us serve our partners better. All reviews are read by our team
+              in Addis Ababa.
             </p>
-          </motion.div>
+          </div>
 
-          {/* Form card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="bg-white rounded-3xl p-8 md:p-10
-                       shadow-xl shadow-warmBrown/8
-                       border border-gray-100"
-          >
-            {/* ── Success state ─────────────────────────────── */}
-            {submitted ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center
-                           justify-center py-10 text-center gap-4"
-              >
-                <div
-                  className="w-16 h-16 rounded-full
-                                bg-forest/10 flex items-center
-                                justify-center"
+          <div className="clay m-3 bg-cream p-6 sm:p-8">
+            <AnimatePresence mode="wait">
+              {submitted ? (
+                <motion.div
+                  key="done"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center gap-4 py-10 text-center"
                 >
-                  <CheckCircle size={32} className="text-forest" />
-                </div>
-                <h3
-                  className="font-display font-bold
-                               text-warmBrown text-2xl"
-                >
-                  Thank You!
-                </h3>
-                <p
-                  className="text-warmBrown/50 text-sm
-                              font-body max-w-xs"
-                >
-                  Your feedback has been received and is under review. We
-                  appreciate your time.
-                </p>
-                <button
-                  onClick={() => {
-                    setSubmitted(false)
-                    form.reset()
-                    setRating(0)
-                  }}
-                  className="mt-2 text-terracotta font-bold
-                             text-sm font-body underline
-                             underline-offset-2 hover:text-terracotta-dark
-                             transition-colors"
-                >
-                  Submit another review
-                </button>
-              </motion.div>
-            ) : (
-              /* ── Feedback form ────────────────────────────── */
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-5"
-                >
-                  {/* Name + Business row */}
-                  <div
-                    className="grid grid-cols-1 sm:grid-cols-2
-                                  gap-5"
-                  >
-                    {/* Name */}
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel
-                            className="text-warmBrown
-                                                font-bold text-sm
-                                                font-body"
-                          >
-                            Your Name *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g. Tigist Bekele"
-                              className="rounded-xl border-gray-200
-                                         focus:border-terracotta
-                                         focus:ring-terracotta/20
-                                         font-body text-warmBrown
-                                         placeholder:text-gray-300"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Business */}
-                    <FormField
-                      control={form.control}
-                      name="business"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel
-                            className="text-warmBrown
-                                                font-bold text-sm
-                                                font-body"
-                          >
-                            Business / Restaurant
-                            <span
-                              className="text-warmBrown/40
-                                             font-normal ml-1"
-                            >
-                              (optional)
-                            </span>
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g. Blue Nile Restaurant"
-                              className="rounded-xl border-gray-200
-                                         focus:border-terracotta
-                                         focus:ring-terracotta/20
-                                         font-body text-warmBrown
-                                         placeholder:text-gray-300"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Country */}
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel
-                          className="text-warmBrown
-                                              font-bold text-sm
-                                              font-body"
-                        >
-                          Country *
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="e.g. United States"
-                            className="rounded-xl border-gray-200
-                                       focus:border-terracotta
-                                       focus:ring-terracotta/20
-                                       font-body text-warmBrown
-                                       placeholder:text-gray-300"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Star rating */}
-                  <FormField
-                    control={form.control}
-                    name="rating"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel
-                          className="text-warmBrown
-                                              font-bold text-sm
-                                              font-body"
-                        >
-                          Your Rating *
-                        </FormLabel>
-                        <FormControl>
-                          <div className="flex items-center gap-3">
-                            <StarRating
-                              value={rating}
-                              size="lg"
-                              onChange={(val) => {
-                                setRating(val)
-                                field.onChange(val)
-                              }}
-                            />
-                            {rating > 0 && (
-                              <span
-                                className="text-sm font-bold
-                                               text-gold font-body"
-                              >
-                                {
-                                  [
-                                    '',
-                                    'Poor',
-                                    'Fair',
-                                    'Good',
-                                    'Great',
-                                    'Excellent!',
-                                  ][rating]
-                                }
-                              </span>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Message */}
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel
-                          className="text-warmBrown
-                                              font-bold text-sm
-                                              font-body"
-                        >
-                          Your Review *
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Tell us about your experience with our injera..."
-                            rows={4}
-                            className="rounded-xl border-gray-200
-                                       focus:border-terracotta
-                                       focus:ring-terracotta/20
-                                       font-body text-warmBrown
-                                       placeholder:text-gray-300
-                                       resize-none"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                        {/* Character count */}
-                        <p
-                          className="text-right text-xs
-                                      text-warmBrown/30 font-body mt-1"
-                        >
-                          {field.value?.length ?? 0} / 20 min
-                        </p>
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Submit button */}
-                  <button
-                    type="submit"
-                    disabled={form.formState.isSubmitting}
-                    className="w-full bg-terracotta
-                               hover:bg-terracotta-dark text-white
-                               font-bold text-sm py-4 rounded-full
-                               transition-all duration-300
-                               hover:shadow-lg
-                               hover:shadow-terracotta/30
-                               hover:-translate-y-0.5
-                               active:translate-y-0
-                               flex items-center justify-center
-                               gap-2 disabled:opacity-60
-                               disabled:cursor-not-allowed"
-                  >
-                    <Send size={15} />
-                    Send Feedback
-                  </button>
-
-                  <p
-                    className="text-center text-warmBrown/30
-                                text-xs font-body"
-                  >
-                    Reviews are moderated before publishing. Usually approved
-                    within 48 hours.
+                  <span className="clay flex h-20 w-20 items-center justify-center rounded-full bg-mint">
+                    <CheckCircle size={36} className="text-forest" />
+                  </span>
+                  <p className="font-display text-2xl font-semibold text-cocoa">Thank you!</p>
+                  <p className="max-w-xs text-sm text-cocoa-soft">
+                    Your feedback has been received and is under review. We appreciate you taking the time.
                   </p>
-                </form>
-              </Form>
-            )}
-          </motion.div>
-        </div>
+                  <button
+                    onClick={() => {
+                      reset()
+                      setSubmitted(false)
+                    }}
+                    className="cursor-pointer text-sm font-semibold text-terracotta underline underline-offset-4"
+                  >
+                    Submit another review
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  exit={{ opacity: 0 }}
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="grid gap-5"
+                  noValidate
+                >
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Field label="Your name *" error={errors.name?.message}>
+                      <input {...register('name')} placeholder="Full name" className={inputClass} />
+                    </Field>
+                    <Field label="Business" optional error={errors.business?.message}>
+                      <input {...register('business')} placeholder="Restaurant or store" className={inputClass} />
+                    </Field>
+                  </div>
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <Field label="Country *" error={errors.country?.message}>
+                      <input {...register('country')} placeholder="e.g. Canada" className={inputClass} />
+                    </Field>
+                    <Field label="Rating *" error={errors.rating?.message}>
+                      <Controller
+                        control={control}
+                        name="rating"
+                        render={({ field }) => (
+                          <div className="clay-inset flex h-12 items-center bg-white/60 px-4">
+                            <StarRating value={field.value} onChange={field.onChange} size="md" />
+                          </div>
+                        )}
+                      />
+                    </Field>
+                  </div>
+                  <Field label="Your message *" error={errors.message?.message}>
+                    <textarea
+                      {...register('message')}
+                      rows={4}
+                      placeholder="Tell us about the taste, packaging, delivery…"
+                      className={`${inputClass} h-auto resize-none py-3`}
+                    />
+                  </Field>
+                  <ClayButton type="submit" disabled={isSubmitting} className="w-full">
+                    <Send size={16} />
+                    {isSubmitting ? 'Sending…' : 'Send Feedback'}
+                  </ClayButton>
+                  <p className="text-center text-xs text-cocoa-soft">
+                    Reviews are moderated before publishing — usually within 48 hours.
+                  </p>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
+        </Reveal>
       </div>
     </section>
   )

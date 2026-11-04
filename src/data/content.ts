@@ -6,27 +6,24 @@ export const categories: Category[] = [
     name: 'Classic Teff Injera',
     subtitle: 'Farm-fresh daily selections',
     info: '10 pieces/pack',
-    buttonColor: 'bg-cta',
-    buttonHover: 'hover:bg-green-600',
-    image: '/images/injera.jpg',
+    tone: 'mint',
+    image: '/images/injera-mesob.png',
   },
   {
     id: 'mixed-grain',
     name: 'Mixed Grain Injera',
     subtitle: 'Warm artisanal blend',
     info: '6 pieces/pack',
-    buttonColor: 'bg-action',
-    buttonHover: 'hover:bg-orange-600',
-    image: '/images/injera.jpg',
+    tone: 'blush',
+    image: '/images/injera-folded-board.png',
   },
   {
     id: 'jumbo-export',
     name: 'Jumbo Export Rolls',
     subtitle: 'Vacuum-sealed for export',
     info: '10 pieces/pack',
-    buttonColor: 'bg-gold',
-    buttonHover: 'hover:bg-gold-dark',
-    image: '/images/injera.jpg',
+    tone: 'butter',
+    image: '/images/injera-basket-rolls.png',
   },
 ]
 
@@ -38,6 +35,7 @@ export const products: Product[] = [
       'Our flagship 100% teff injera. Traditionally fermented for 3 days, delivering the authentic sour taste and perfect spongy texture loved by Ethiopian families worldwide.',
     weightInfo: '500g · 10 pieces per pack',
     badge: 'Best Seller',
+    image: '/images/injera-rolls-plate.png',
   },
   {
     id: 'mixed-grain',
@@ -46,6 +44,7 @@ export const products: Product[] = [
       'A milder blend of teff and barley — ideal for restaurants introducing injera to new customers. Softer flavor profile with the same traditional texture.',
     weightInfo: '500g · 10 pieces per pack',
     badge: 'Restaurant Favorite',
+    image: '/images/injera-doro-wat.png',
   },
   {
     id: 'jumbo-export',
@@ -54,6 +53,7 @@ export const products: Product[] = [
       'Vacuum-sealed and nitrogen-flushed for maximum freshness. Purpose-built for international shipping — arrives at destination markets with full flavor intact.',
     weightInfo: '1kg · Bulk packs available',
     badge: 'Export Ready',
+    image: '/images/injera-spirals.png',
   },
 ]
 
@@ -95,7 +95,7 @@ export const testimonials: Testimonial[] = [
 
 export const stats = [
   { value: 20, suffix: '+', label: 'Years of Tradition' },
-  { value: 15, suffix: '', label: 'Countries Served' },
+  { value: 15, suffix: '+', label: 'Countries Served' },
   { value: 100, suffix: '%', label: 'Teff Sourced Locally' },
 ]
 
@@ -136,6 +136,7 @@ export const galleryItems: GalleryItem[] = [
     location: 'Washington D.C., USA',
     colorFrom: '#C8531A',
     colorTo: '#E8744A',
+    image: '/images/beyaynetu-platter.png',
     height: 'h-72',
   },
   {
@@ -143,27 +144,31 @@ export const galleryItems: GalleryItem[] = [
     location: 'Dubai, UAE',
     colorFrom: '#2D5016',
     colorTo: '#3D6B1E',
-    height: 'h-52',
+    image: '/images/dark-teff-tibs.png',
+    height: 'h-64',
   },
   {
     id: '3',
     location: 'London, UK',
     colorFrom: '#F5C842',
     colorTo: '#D4A520',
-    height: 'h-64',
+    image: '/images/injera-rolls-plate.png',
+    height: 'h-56',
   },
   {
     id: '4',
     location: 'Toronto, Canada',
     colorFrom: '#1A1208',
     colorTo: '#2C1F0D',
-    height: 'h-56',
+    image: '/images/veggie-platter.png',
+    height: 'h-[26rem]',
   },
   {
     id: '5',
     location: 'Stockholm, Sweden',
     colorFrom: '#C8531A',
     colorTo: '#2D5016',
+    image: '/images/injera-doro-wat.png',
     height: 'h-72',
   },
   {
@@ -171,27 +176,46 @@ export const galleryItems: GalleryItem[] = [
     location: 'Sydney, Australia',
     colorFrom: '#F5C842',
     colorTo: '#C8531A',
-    height: 'h-60',
+    image: '/images/injera-folded-board.png',
+    height: 'h-56',
   },
   {
     id: '7',
     location: 'Amsterdam, Netherlands',
     colorFrom: '#2D5016',
     colorTo: '#1A1208',
-    height: 'h-64',
+    image: '/images/injera-spirals.png',
+    height: 'h-[24rem]',
   },
   {
     id: '8',
     location: 'Oslo, Norway',
     colorFrom: '#E8744A',
     colorTo: '#F5C842',
-    height: 'h-52',
+    image: '/images/injera-basket-rolls.png',
+    height: 'h-60',
   },
   {
     id: '9',
     location: 'Minneapolis, USA',
     colorFrom: '#1A1208',
     colorTo: '#C8531A',
-    height: 'h-68',
+    image: '/images/injera-mesob.png',
+    height: 'h-56',
   },
 ]
+
+export const processVideos = [
+  { id: 'main', youtubeId: 'Y_BjExuprfw', title: 'Our Traditional Process', tone: 'bg-butter' },
+  { id: 'fermentation', youtubeId: 'hQuDRRMZVE0', title: 'Fermentation Process', tone: 'bg-blush' },
+  { id: 'kitchen', youtubeId: 'wXUXp2_E7bQ', title: 'Our Kitchen', tone: 'bg-mint' },
+  { id: 'packaging', youtubeId: 'P9TfgwRMWbE', title: 'Packaging & Export', tone: 'bg-sky' },
+]
+
+export const contactInfo = {
+  phone: '+251 911 234 567',
+  phoneHref: 'tel:+251911234567',
+  email: 'orders@habeshaharvest.com',
+  whatsappHref: 'https://wa.me/251911234567',
+  address: 'Bole Sub-city, Addis Ababa, Ethiopia',
+}

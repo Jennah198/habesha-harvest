@@ -1,51 +1,171 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700;900&display=swap');
-
-@import "tailwindcss/preflight";
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --font-playfair: 'Playfair Display', Georgia, serif;
-  --font-lato: 'Lato', system-ui, sans-serif;
+/* ────────────────────────────────────────────────────────────────
+   Design tokens — Habesha Harvest (claymorphism)
+   Tailwind v4 reads theme values from CSS, not tailwind.config.ts.
+   ──────────────────────────────────────────────────────────────── */
+@theme inline {
+  --font-display: var(--font-fredoka), ui-rounded, system-ui, sans-serif;
+  --font-body: var(--font-nunito), system-ui, sans-serif;
+  --font-sans: var(--font-nunito), system-ui, sans-serif;
+
+  /* Brand */
+  --color-cream: #fbf4ea;
+  --color-clay: #f6ebdd;
+  --color-terracotta: #d2602f;
+  --color-terracotta-light: #ec8a5e;
+  --color-terracotta-dark: #a8481f;
+  --color-gold: #f2be45;
+  --color-gold-dark: #d9a21e;
+  --color-sage: #8db36a;
+  --color-forest: #3f6b2a;
+  --color-cocoa: #3a2416;
+  --color-cocoa-soft: #7a5a45;
+  --color-teff: #e7c79a;
+
+  /* Pastel clay surfaces */
+  --color-blush: #f9d9c8;
+  --color-butter: #fbe9b7;
+  --color-mint: #dcebcb;
+  --color-sky: #d8e7f0;
+  --color-lilac: #e6dcf2;
+
+  /* shadcn semantic tokens (used by components/ui primitives) */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-cocoa);
+  --color-card: var(--color-clay);
+  --color-card-foreground: var(--color-cocoa);
+  --color-popover: var(--color-cream);
+  --color-popover-foreground: var(--color-cocoa);
+  --color-primary: var(--color-terracotta);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--color-butter);
+  --color-secondary-foreground: var(--color-cocoa);
+  --color-muted: var(--color-clay);
+  --color-muted-foreground: var(--color-cocoa-soft);
+  --color-accent: var(--color-blush);
+  --color-accent-foreground: var(--color-cocoa);
+  --color-destructive: #d64545;
+  --color-border: rgb(122 90 69 / 0.15);
+  --color-input: rgb(122 90 69 / 0.2);
+  --color-ring: var(--color-terracotta);
+
+  --radius-clay: 2rem;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-wobble: wobble 7s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes wobble {
+    0%, 100% { border-radius: 42% 58% 60% 40% / 45% 45% 55% 55%; }
+    50% { border-radius: 58% 42% 40% 60% / 55% 60% 40% 45%; }
+  }
 }
 
+/* ────────────────────────────────────────────────────────────────
+   Clay utilities
+   Inset highlights use white/black alpha, so any background tint
+   (bg-blush, bg-terracotta, …) automatically looks like soft clay.
+   Set --clay-drop to tint the outer shadow.
+   ──────────────────────────────────────────────────────────────── */
+@utility clay {
+  border-radius: var(--radius-clay);
+  box-shadow:
+    inset 8px 8px 16px rgb(255 255 255 / 0.6),
+    inset -8px -10px 18px rgb(58 36 22 / 0.09),
+    18px 22px 44px -14px var(--clay-drop, rgb(150 95 55 / 0.35));
+}
+
+@utility clay-sm {
+  border-radius: 1.25rem;
+  box-shadow:
+    inset 4px 4px 8px rgb(255 255 255 / 0.6),
+    inset -4px -5px 10px rgb(58 36 22 / 0.1),
+    8px 12px 22px -8px var(--clay-drop, rgb(150 95 55 / 0.35));
+}
+
+/* Buttons on saturated colours: softer white highlight */
+@utility clay-btn {
+  border-radius: 999px;
+  box-shadow:
+    inset 4px 4px 8px rgb(255 255 255 / 0.35),
+    inset -4px -6px 10px rgb(0 0 0 / 0.16),
+    8px 12px 24px -8px var(--clay-drop, rgb(168 72 31 / 0.55));
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  &:hover { transform: translateY(-2px); }
+  &:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow:
+      inset 6px 6px 12px rgb(0 0 0 / 0.18),
+      inset -3px -3px 8px rgb(255 255 255 / 0.25);
+  }
+}
+
+/* Pressed-in wells for inputs and tracks */
+@utility clay-inset {
+  border-radius: 1.1rem;
+  box-shadow:
+    inset 5px 5px 10px rgb(150 95 55 / 0.18),
+    inset -5px -5px 10px rgb(255 255 255 / 0.85);
+}
+
+@utility clay-hover {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+  &:hover { transform: translateY(-6px) rotate(-0.4deg); }
+}
+
+@utility section-pad {
+  padding-block: 6rem;
+  padding-inline: 1.25rem;
+  @media (width >= 40rem) { padding-inline: 2rem; }
+}
+
+@utility max-container {
+  max-width: 76rem;
+  margin-inline: auto;
+}
+
+/* ──────────────────────────────────────────────────────────────── */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
 }
 
 body {
-  font-family: var(--font-lato);
-  background-color: #faf7f2;
-  color: #2c1a0e;
+  font-family: var(--font-body);
+  background-color: var(--color-cream);
+  color: var(--color-cocoa);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background-color: #c8531a;
+  background-color: var(--color-terracotta);
   color: white;
 }
 
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #faf7f2;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
 ::-webkit-scrollbar-thumb {
-  background: #c8531a;
+  background: var(--color-terracotta-light);
   border-radius: 99px;
 }
 
-@layer utilities {
-  .font-display {
-    font-family: var(--font-playfair);
-  }
-  .font-body {
-    font-family: var(--font-lato);
-  }
-  .section-pad {
-    @apply py-20 px-4 sm:px-6 lg:px-8;
-  }
-  .max-container {
-    @apply max-w-6xl mx-auto;
+:focus-visible {
+  outline: 3px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

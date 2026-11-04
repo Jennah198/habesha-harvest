@@ -1,219 +1,90 @@
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Package, ArrowRight } from 'lucide-react'
 import { categories } from '@/data/content'
+import { ClayButton, Reveal, SectionHeader, scrollToId, toneBg } from '@/components/ui/clay'
 
-// ─── Animation variants ────────────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
+const dropTone = {
+  mint: '[--clay-drop:rgb(63_107_42/0.3)]',
+  blush: '[--clay-drop:rgb(168_72_31/0.3)]',
+  butter: '[--clay-drop:rgb(217_162_30/0.35)]',
+  sky: '[--clay-drop:rgb(60_110_150/0.3)]',
+  lilac: '[--clay-drop:rgb(110_80_160/0.3)]',
 }
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.15 } },
-}
-
-// ─── Smooth scroll helper ──────────────────────────────────────────
-const scrollTo = (href: string) => {
-  const el = document.querySelector(href)
-  if (el) el.scrollIntoView({ behavior: 'smooth' })
-}
+const btnVariant = { mint: 'sage', blush: 'primary', butter: 'gold', sky: 'primary', lilac: 'primary' } as const
 
 export default function Categories() {
   return (
-    <section id="categories" className="bg-white py-20 px-8 sm:px-12 lg:px-16">
-      <div className="max-w-5xl mx-auto">
-        {/* ── Section heading ──────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          {/* Small label above heading */}
-          <span
-            className="inline-block text-xs font-bold uppercase
-                           tracking-widest text-terracotta font-body mb-3"
-          >
-            What We Offer
-          </span>
+    <section id="our-injera" className="section-pad relative">
+      <div className="max-container">
+        <SectionHeader
+          eyebrow="What we offer"
+          title={
+            <>
+              Our best delivered <span className="text-terracotta">categories</span>
+            </>
+          }
+          subtitle="Three varieties of authentic Ethiopian injera, vacuum-sealed and shipped fresh to your door."
+        />
 
-          {/* Main heading */}
-          <h2
-            className="font-display font-bold text-warmBrown
-                         text-3xl md:text-4xl"
-          >
-            Our best delivered categories
-          </h2>
-
-          {/* Terracotta accent underline */}
-          <div
-            className="w-16 h-1 bg-terracotta rounded-full
-                          mx-auto mt-4"
-          />
-
-          {/* Subtitle */}
-          <p
-            className="text-warmBrown/50 text-sm font-body
-                        mt-4 max-w-md mx-auto leading-relaxed"
-          >
-            Three varieties of authentic Ethiopian injera, vacuum-sealed and
-            shipped fresh to your door.
-          </p>
-        </motion.div>
-
-        {/* ── Three cards grid ─────────────────────────────────── */}
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, margin: '-80px' }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
-        >
-          {categories.map((cat) => (
-            <motion.div
+        <div className="grid gap-8 md:grid-cols-3">
+          {categories.map((cat, i) => (
+            <motion.article
               key={cat.id}
-              variants={fadeUp}
-              className="group bg-white rounded-3xl
-                         border border-gray-100
-                         shadow-sm hover:shadow-xl
-                         hover:shadow-terracotta/10
-                         transition-all duration-500
-                         hover:-translate-y-2
-                         flex flex-col items-center
-                         text-center p-7"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.6, delay: i * 0.12 }}
+              className={`clay clay-hover group flex flex-col items-center p-7 text-center ${toneBg[cat.tone]} ${dropTone[cat.tone]}`}
             >
-              {/* ── Circular image ──────────────────────────── */}
-              <div className="relative mb-5">
-                {/* Outer decorative ring */}
-                <div
-                  className="w-36 h-36 rounded-full
-                                bg-linen-dark p-1.5
-                                group-hover:scale-105
-                                transition-transform duration-500"
-                >
-                  {/* Inner image circle */}
-                  <div
-                    className="w-full h-full rounded-full
-                                  overflow-hidden border-4
-                                  border-white shadow-md"
-                  >
-                    <img
-                      src={cat.image}
-                      alt={cat.name}
-                      className="w-full h-full object-cover
-                                 group-hover:scale-110
-                                 transition-transform duration-700"
-                      onError={(e) => {
-                        // gradient fallback per category color
-                        e.currentTarget.style.display = 'none'
-                        if (e.currentTarget.parentElement) {
-                          e.currentTarget.parentElement.style.background =
-                            cat.id === 'classic-teff'
-                              ? 'linear-gradient(135deg,#C8531A,#F5C842)'
-                              : cat.id === 'mixed-grain'
-                                ? 'linear-gradient(135deg,#F97316,#FBBF24)'
-                                : 'linear-gradient(135deg,#2D5016,#F5C842)'
-                        }
-                      }}
-                    />
-                  </div>
+              <div className="clay relative mb-6 h-44 w-44 rounded-full bg-white/70 p-3">
+                <div className="clay-inset relative h-full w-full overflow-hidden rounded-full">
+                  <Image
+                    src={cat.image}
+                    alt={cat.name}
+                    fill
+                    sizes="176px"
+                    className="object-cover transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110"
+                  />
                 </div>
-
-                {/* Small category number badge */}
-                <div
-                  className="absolute -bottom-1 -right-1
-                                w-7 h-7 rounded-full bg-terracotta
-                                border-2 border-white
-                                flex items-center justify-center
-                                shadow-md"
-                >
-                  <span className="text-white text-[10px] font-black">
-                    {categories.indexOf(cat) + 1}
-                  </span>
-                </div>
+                <span className="clay-sm absolute -right-1 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-white font-display text-sm font-semibold text-terracotta">
+                  0{i + 1}
+                </span>
               </div>
 
-              {/* ── Product name ─────────────────────────────── */}
-              <h3
-                className="font-display font-bold text-warmBrown
-                             text-lg leading-tight mt-1"
+              <h3 className="font-display text-2xl font-semibold text-cocoa">{cat.name}</h3>
+              <p className="mt-1 text-sm text-cocoa-soft">{cat.subtitle}</p>
+
+              <span className="clay-inset mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/40 px-4 py-1.5 text-xs font-bold text-cocoa">
+                <Package size={14} /> {cat.info}
+              </span>
+
+              <ClayButton
+                variant={btnVariant[cat.tone]}
+                onClick={() => scrollToId('#contact')}
+                className="mt-6 w-full"
               >
-                {cat.name}
-              </h3>
-
-              {/* ── Subtitle ─────────────────────────────────── */}
-              <p className="text-gray-400 text-xs font-body mt-1.5">
-                {cat.subtitle}
-              </p>
-
-              {/* ── Pack info ────────────────────────────────── */}
-              <div className="flex items-center gap-1.5 mt-1">
-                <span
-                  className="w-1 h-1 rounded-full bg-terracotta/40
-                                 inline-block"
-                />
-                <p className="text-gray-400 text-xs font-body">{cat.info}</p>
-              </div>
-
-              {/* ── Thin divider ─────────────────────────────── */}
-              <div className="w-full h-px bg-gray-100 my-5" />
-
-              {/* ── Order Now button ─────────────────────────── */}
-              <button
-                onClick={() => scrollTo('#contact')}
-                className={`
-                  w-full flex items-center justify-center gap-2
-                  text-white font-bold text-sm
-                  py-3 rounded-full
-                  transition-all duration-300
-                  hover:shadow-lg hover:-translate-y-0.5
-                  active:translate-y-0
-                  ${cat.buttonColor} ${cat.buttonHover}
-                `}
-              >
-                <ShoppingCart size={14} />
+                <ShoppingCart size={16} />
                 Order Now
-              </button>
-            </motion.div>
+              </ClayButton>
+            </motion.article>
           ))}
-        </motion.div>
+        </div>
 
-        {/* ── Bottom CTA strip ─────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-12 bg-linen rounded-3xl px-8 py-6
-                     flex flex-col sm:flex-row items-center
-                     justify-between gap-4 border border-linen-dark"
-        >
-          {/* Left text */}
+        <Reveal className="clay mt-12 flex flex-col items-center justify-between gap-5 bg-white p-6 text-center sm:flex-row sm:px-10 sm:text-left">
           <div>
-            <p className="font-display font-bold text-warmBrown text-lg">
-              Need a custom quantity?
-            </p>
-            <p className="text-warmBrown/50 text-sm font-body mt-0.5">
-              We handle bulk orders from 10kg to several tons.
+            <p className="font-display text-xl font-semibold text-cocoa">Need a custom quantity?</p>
+            <p className="text-sm text-cocoa-soft">
+              Restaurants, grocers and distributors — we tailor packs and pallets to your volume.
             </p>
           </div>
-
-          {/* Right button */}
-          <button
-            onClick={() => scrollTo('#contact')}
-            className="flex-shrink-0 bg-terracotta hover:bg-terracotta-dark
-                       text-white font-bold text-sm px-7 py-3
-                       rounded-full transition-all duration-300
-                       hover:shadow-lg hover:shadow-terracotta/30
-                       hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Get a Custom Quote
-          </button>
-        </motion.div>
+          <ClayButton variant="gold" onClick={() => scrollToId('#contact')} className="shrink-0">
+            Get a Custom Quote <ArrowRight size={16} />
+          </ClayButton>
+        </Reveal>
       </div>
     </section>
   )

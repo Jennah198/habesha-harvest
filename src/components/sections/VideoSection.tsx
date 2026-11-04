@@ -1,466 +1,183 @@
 'use client'
 
-import { useState, useRef } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Play, X } from 'lucide-react'
 import { useCountUp } from '@/hooks/useCountUp'
-import { stats } from '@/data/content'
+import { stats, processVideos } from '@/data/content'
+import { Reveal, SectionHeader } from '@/components/ui/clay'
 
-// ─── Animation variants ────────────────────────────────────────────
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-}
+const steps = ['Teff harvested', 'Stone-milled', '3-day ferment', 'Baked on mitad', 'Vacuum-sealed']
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.15 } },
-}
+const thumb = (id: string, quality: 'hq' | 'maxres' = 'hq') =>
+  `https://i.ytimg.com/vi/${id}/${quality}default.jpg`
 
-// ─── Secondary videos data ─────────────────────────────────────────
-const secondaryVideos = [
-  {
-    id: '1',
-    title: 'Fermentation Process',
-    duration: '2:34',
-    bgFrom: '#C8531A',
-    bgTo: '#F5C842',
-  },
-  {
-    id: '2',
-    title: 'Our Kitchen',
-    duration: '3:12',
-    bgFrom: '#2D5016',
-    bgTo: '#3D6B1E',
-  },
-  {
-    id: '3',
-    title: 'Packaging & Export',
-    duration: '4:05',
-    bgFrom: '#1A1208',
-    bgTo: '#C8531A',
-  },
-]
-
-// ─── Single stat counter component ────────────────────────────────
-function StatCounter({
-  value,
-  suffix,
-  label,
-}: {
-  value: number
-  suffix: string
-  label: string
-}) {
-  const { count, ref } = useCountUp(value, 2000)
-
+function StatCounter({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+  const { count, ref } = useCountUp(value, 1800)
   return (
-    <div ref={ref} className="flex flex-col items-center text-center">
-      {/* Large animated number */}
-      <span
-        className="font-display font-bold text-gold
-                       text-5xl md:text-6xl leading-none"
-      >
+    <div ref={ref} className="clay-sm flex flex-col items-center bg-white/95 px-4 py-6 text-center">
+      <span className="font-display text-4xl font-semibold text-terracotta md:text-5xl">
         {count}
-        <span className="text-3xl md:text-4xl">{suffix}</span>
+        {suffix}
       </span>
-      {/* Label */}
-      <span
-        className="text-white/50 text-xs font-body
-                       uppercase tracking-widest mt-3"
-      >
-        {label}
-      </span>
+      <span className="mt-1 text-sm font-semibold text-cocoa-soft">{label}</span>
     </div>
   )
 }
 
+function PlayButton({ big = false }: { big?: boolean }) {
+  return (
+    <span
+      className={`clay-btn relative flex items-center justify-center bg-terracotta text-white transition-transform group-hover:scale-110 ${big ? 'h-20 w-20' : 'h-11 w-11'}`}
+    >
+      <span className="absolute inset-0 animate-ping rounded-full bg-terracotta/40" />
+      <Play size={big ? 30 : 16} className="relative ml-1 fill-current" />
+    </span>
+  )
+}
+
 export default function VideoSection() {
-  // controls whether the main video modal is open
-  const [videoOpen, setVideoOpen] = useState(false)
-  // tracks which secondary video is active
-  const [activeSecondary, setActiveSecondary] = useState<string | null>(null)
+  const [playing, setPlaying] = useState<string | null>(null)
+  const [main, ...secondary] = processVideos
+
+  useEffect(() => {
+    if (!playing) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setPlaying(null)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [playing])
+
+  const current = processVideos.find((v) => v.id === playing)
 
   return (
-    <section
-      id="process"
-      className="bg-espresso py-20 px-8 sm:px-12 lg:px-16
-                 relative overflow-hidden"
-    >
-      {/* ── Decorative background blobs ──────────────────────── */}
-      {/*
-        These large blurred circles add depth to the dark
-        background without being distracting
-      */}
-      <div
-        className="absolute top-0 left-1/4 w-96 h-96
-                      bg-terracotta/10 rounded-full blur-3xl
-                      pointer-events-none"
-      />
-      <div
-        className="absolute bottom-0 right-1/4 w-96 h-96
-                      bg-gold/5 rounded-full blur-3xl
-                      pointer-events-none"
-      />
+    <section id="process" className="px-3 py-12 sm:px-6">
+      <div className="clay section-pad relative mx-auto max-w-7xl overflow-hidden bg-terracotta [--clay-drop:rgb(168_72_31/0.45)]">
+        <div aria-hidden className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-terracotta-light/60 blur-2xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-gold/30 blur-3xl" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
-        {/* ── Section header ───────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          {/* Small label */}
-          <span
-            className="inline-block text-xs font-bold uppercase
-                           tracking-widest text-gold/60 font-body mb-3"
-          >
-            Behind The Craft
-          </span>
-
-          {/* Main heading */}
-          <h2
-            className="font-display font-bold text-white
-                         text-3xl md:text-5xl"
-          >
-            From Teff to Table
-          </h2>
-
-          {/* Gold accent underline */}
-          <div
-            className="w-16 h-1 bg-gold rounded-full
-                          mx-auto mt-4"
+        <div className="max-container relative">
+          <SectionHeader
+            invert
+            eyebrow="Behind the craft"
+            title="From Teff to Table"
+            subtitle="Watch how we turn raw Ethiopian teff grain into the world's finest injera, ready for your table."
           />
 
-          {/* Subtitle */}
-          <p
-            className="text-white/40 text-sm font-body
-                        mt-4 max-w-md mx-auto leading-relaxed"
-          >
-            Watch how we turn raw Ethiopian teff grain into the world's finest
-            injera, ready for your table.
-          </p>
-        </motion.div>
-
-        {/* ── Primary video player ─────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="max-w-4xl mx-auto"
-        >
-          <div
-            className="relative rounded-3xl overflow-hidden
-                          border border-white/10 shadow-2xl
-                          shadow-black/50 aspect-video
-                          bg-espresso-light group cursor-pointer"
-            onClick={() => setVideoOpen(true)}
-          >
-            {/* Video thumbnail background */}
-            <div
-              className="absolute inset-0 bg-gradient-to-br
-                            from-terracotta/30 via-espresso-light
-                            to-espresso"
-            />
-
-            {/* Injera pattern overlay */}
-            <div className="absolute inset-0 opacity-10">
-              <svg
-                viewBox="0 0 800 450"
-                className="w-full h-full"
-                xmlns="http://www.w3.org/2000/svg"
+          {/* Process steps */}
+          <Reveal className="mb-12 flex flex-wrap justify-center gap-3">
+            {steps.map((s, i) => (
+              <span
+                key={s}
+                className="clay-btn inline-flex items-center gap-2 bg-white/15 px-4 py-2 text-sm font-semibold text-cream [--clay-drop:rgb(0_0_0/0.15)] hover:bg-white/25"
               >
-                {/* Large injera circle in background */}
-                <circle
-                  cx="400"
-                  cy="225"
-                  r="200"
-                  fill="none"
-                  stroke="#F5C842"
-                  strokeWidth="1"
-                  opacity="0.5"
-                />
-                <circle
-                  cx="400"
-                  cy="225"
-                  r="150"
-                  fill="none"
-                  stroke="#F5C842"
-                  strokeWidth="1"
-                  opacity="0.4"
-                />
-                <circle
-                  cx="400"
-                  cy="225"
-                  r="100"
-                  fill="none"
-                  stroke="#F5C842"
-                  strokeWidth="1"
-                  opacity="0.3"
-                />
-                {/* Texture dots */}
-                {Array.from({ length: 24 }).map((_, i) => {
-                  const angle = (i * 15 * Math.PI) / 180
-                  const x = 400 + 170 * Math.cos(angle)
-                  const y = 225 + 170 * Math.sin(angle)
-                  return (
-                    <circle
-                      key={i}
-                      cx={x}
-                      cy={y}
-                      r="3"
-                      fill="#F5C842"
-                      opacity="0.4"
-                    />
-                  )
-                })}
-              </svg>
-            </div>
-
-            {/* Video title overlay — bottom left */}
-            <div className="absolute bottom-6 left-6 z-10">
-              <p
-                className="text-white/40 text-xs font-body
-                            uppercase tracking-widest mb-1"
-              >
-                Featured Video
-              </p>
-              <p className="text-white font-display font-bold text-xl">
-                Our Traditional Process
-              </p>
-              <p className="text-white/50 text-sm font-body mt-1">
-                4 min · HD Quality
-              </p>
-            </div>
-
-            {/* Duration badge — top right */}
-            <div
-              className="absolute top-5 right-5 z-10
-                            bg-black/40 backdrop-blur-sm
-                            rounded-full px-3 py-1.5
-                            border border-white/10"
-            >
-              <span className="text-white text-xs font-body font-bold">
-                4:00
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gold text-xs font-bold text-cocoa">
+                  {i + 1}
+                </span>
+                {s}
               </span>
-            </div>
+            ))}
+          </Reveal>
 
-            {/* Play button — center */}
-            <div
-              className="absolute inset-0 flex items-center
-                            justify-center z-10"
-            >
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-20 h-20 rounded-full bg-terracotta
-                           flex items-center justify-center
-                           shadow-2xl shadow-terracotta/50
-                           group-hover:shadow-terracotta/70
-                           transition-shadow duration-300"
+          <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+            {/* Featured */}
+            <Reveal>
+              <button
+                onClick={() => setPlaying(main.id)}
+                className={`clay group relative flex h-full min-h-80 w-full cursor-pointer flex-col justify-end overflow-hidden p-6 text-left ${main.tone} [--clay-drop:rgb(0_0_0/0.25)]`}
+                aria-label={`Play video: ${main.title}`}
               >
-                <Play size={30} className="text-white ml-1.5" fill="white" />
-              </motion.div>
-            </div>
-
-            {/* Hover overlay */}
-            <div
-              className="absolute inset-0 bg-black/20
-                            opacity-0 group-hover:opacity-100
-                            transition-opacity duration-300"
-            />
-          </div>
-        </motion.div>
-
-        {/* ── Stats row ────────────────────────────────────────── */}
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="mt-16 grid grid-cols-3 gap-8
-                     max-w-2xl mx-auto"
-        >
-          {stats.map((stat) => (
-            <motion.div key={stat.label} variants={fadeUp}>
-              <StatCounter
-                value={stat.value}
-                suffix={stat.suffix}
-                label={stat.label}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* ── Thin gold divider ────────────────────────────────── */}
-        <div className="w-full h-px bg-white/10 mt-14 mb-12" />
-
-        {/* ── Secondary videos row ─────────────────────────────── */}
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-5"
-        >
-          {secondaryVideos.map((vid) => (
-            <motion.div
-              key={vid.id}
-              variants={fadeUp}
-              onClick={() =>
-                setActiveSecondary(activeSecondary === vid.id ? null : vid.id)
-              }
-              className="group relative rounded-2xl overflow-hidden
-                         border border-white/10
-                         cursor-pointer aspect-video
-                         hover:border-terracotta/50
-                         transition-all duration-300
-                         hover:shadow-lg hover:shadow-terracotta/20"
-            >
-              {/* Gradient background */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(135deg,
-                    ${vid.bgFrom}, ${vid.bgTo})`,
-                }}
-              />
-
-              {/* Injera texture dots */}
-              <div className="absolute inset-0 opacity-20">
-                <svg
-                  viewBox="0 0 300 170"
-                  className="w-full h-full"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="150"
-                    cy="85"
-                    r="70"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="0.8"
-                    strokeDasharray="3 4"
-                  />
-                  <circle
-                    cx="150"
-                    cy="85"
-                    r="45"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="0.8"
-                    strokeDasharray="3 4"
-                  />
-                  {Array.from({ length: 12 }).map((_, i) => {
-                    const a = (i * 30 * Math.PI) / 180
-                    return (
-                      <circle
-                        key={i}
-                        cx={150 + 60 * Math.cos(a)}
-                        cy={85 + 60 * Math.sin(a)}
-                        r="2.5"
-                        fill="white"
-                        opacity="0.6"
-                      />
-                    )
-                  })}
-                </svg>
-              </div>
-
-              {/* Play button */}
-              <div
-                className="absolute inset-0 flex items-center
-                              justify-center"
-              >
-                <div
-                  className="w-11 h-11 rounded-full
-                                bg-white/20 backdrop-blur-sm
-                                border border-white/30
-                                flex items-center justify-center
-                                group-hover:bg-terracotta
-                                group-hover:border-terracotta
-                                transition-all duration-300"
-                >
-                  <Play size={16} className="text-white ml-0.5" fill="white" />
-                </div>
-              </div>
-
-              {/* Title + duration — bottom */}
-              <div
-                className="absolute bottom-0 left-0 right-0
-                              bg-gradient-to-t from-black/60
-                              to-transparent p-4"
-              >
-                <p
-                  className="text-white font-body font-bold
-                               text-sm leading-tight"
-                >
-                  {vid.title}
-                </p>
-                <p className="text-white/50 text-xs font-body mt-0.5">
-                  {vid.duration}
-                </p>
-              </div>
-
-              {/* Active indicator */}
-              {activeSecondary === vid.id && (
-                <div
-                  className="absolute inset-0 border-2
-                                border-terracotta rounded-2xl
-                                pointer-events-none"
+                <Image
+                  src={thumb(main.youtubeId)}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 700px, 95vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-              )}
-            </motion.div>
-          ))}
-        </motion.div>
+                <div className="absolute inset-0 bg-gradient-to-t from-cocoa/60 via-transparent to-transparent" />
+                <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <PlayButton big />
+                </span>
+                <div className="clay-sm relative w-fit bg-white/90 px-5 py-3 backdrop-blur">
+                  <p className="text-xs font-bold uppercase tracking-widest text-terracotta">Featured video</p>
+                  <p className="font-display text-xl font-semibold text-cocoa">{main.title}</p>
+                </div>
+              </button>
+            </Reveal>
+
+            {/* Secondary */}
+            <div className="grid gap-4">
+              {secondary.map((v, i) => (
+                <Reveal key={v.id} delay={i * 0.1}>
+                  <button
+                    onClick={() => setPlaying(v.id)}
+                    className={`clay-sm clay-hover group flex w-full cursor-pointer items-center gap-4 p-3 text-left ${v.tone} [--clay-drop:rgb(0_0_0/0.2)]`}
+                    aria-label={`Play video: ${v.title}`}
+                  >
+                    <span className="clay-inset relative flex h-20 w-28 shrink-0 items-center justify-center overflow-hidden">
+                      <Image src={thumb(v.youtubeId)} alt="" fill sizes="112px" className="object-cover" />
+                      <span className="relative"><PlayButton /></span>
+                    </span>
+                    <span className="flex-1">
+                      <span className="block font-display text-lg font-semibold text-cocoa">{v.title}</span>
+                      <span className="text-sm text-cocoa-soft">Watch on site</span>
+                    </span>
+                  </button>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {stats.map((s) => (
+              <StatCounter key={s.label} {...s} />
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* ── Full screen video modal ───────────────────────────── */}
-      {videoOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/90
-                     backdrop-blur-sm flex items-center
-                     justify-center p-4"
-          onClick={() => setVideoOpen(false)}
-        >
+      {/* Modal */}
+      <AnimatePresence>
+        {current && (
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="relative w-full max-w-4xl aspect-video
-                       rounded-2xl overflow-hidden bg-black"
-            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-cocoa/70 p-4 backdrop-blur-sm"
+            onClick={() => setPlaying(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={current.title}
           >
-            {/* YouTube embed — replace VIDEO_ID with real id */}
-            <iframe
-              className="w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-              title="Habesha Harvest — Our Traditional Process"
-              allow="accelerometer; autoplay; clipboard-write;
-                     encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-
-            {/* Close button */}
-            <button
-              onClick={() => setVideoOpen(false)}
-              className="absolute top-4 right-4 z-10
-                         w-10 h-10 rounded-full bg-black/60
-                         backdrop-blur-sm border border-white/20
-                         flex items-center justify-center
-                         hover:bg-terracotta transition-all"
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="clay relative w-full max-w-4xl bg-cream p-3"
             >
-              <X size={18} className="text-white" />
-            </button>
+              <button
+                onClick={() => setPlaying(null)}
+                className="clay-btn absolute -right-3 -top-3 z-10 flex h-11 w-11 cursor-pointer items-center justify-center bg-white text-cocoa [--clay-drop:rgb(0_0_0/0.3)]"
+                aria-label="Close video"
+              >
+                <X size={20} />
+              </button>
+              <div className="clay-inset aspect-video w-full overflow-hidden rounded-[1.5rem] bg-cocoa">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube-nocookie.com/embed/${current.youtubeId}?autoplay=1&rel=0`}
+                  title={current.title}
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  allowFullScreen
+                />
+              </div>
+              <p className="px-3 pb-1 pt-3 font-display text-lg font-semibold text-cocoa">{current.title}</p>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
+        )}
+      </AnimatePresence>
     </section>
   )
 }
